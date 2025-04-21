@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Générateur de tableau HTML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+      color: #333;
+    }
+
+    .main-form {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="number"] {
+      width: 60px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+
+    button {
+      margin: 5px 5px 15px 0;
+      padding: 10px 15px;
+      border: none;
+      background: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #output-live table {
+      width: 100%;
+      border: 1px solid #000;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    #output-live th,
+    #output-live td {
+      border: 1px solid #000;
+      padding: 5px;
+      text-align: center;
+    }
+
+    #output-live thead th {
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+
+    #output-live tfoot td {
+      background-color: rgba(0, 255, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-form">
+    <h1>Générateur de tableau HTML</h1>
+
+    <label>Dimensions du tableau (colonnes x lignes) :</label>
+    <p>
+      <input type="number" id="sizeW" value="3" min="1" />
+      x
+      <input type="number" id="sizeH" value="3" min="1" />
+    </p>
+
+    <p>
+      <input type="checkbox" id="indent" checked />
+      <label for="indent">Indenter et formater le code</label><br />
+
+      <input type="checkbox" id="ttags" checked />
+      <label for="ttags">Inclure les balises &lt;thead&gt;, &lt;tbody&gt;, &lt;tfoot&gt;</label><br />
+
+      <input type="checkbox" id="caption" checked />
+      <label for="caption">Inclure une légende &lt;caption&gt;</label>
+    </p>
+
+    <button id="create-code">Générer</button>
+    <button id="copy-code">Copier le code</button>
+
+    <p><label for="output">Code HTML généré :</label></p>
+    <textarea id="output" rows="20" readonly></textarea>
+
+    <h3>Prévisualisation :</h3>
+    <div id="output-live"></div>
+  </div>
+
+  <script>
+    "use strict";
+
+    document.getElementById("create-code").addEventListener("click", generate);
+    document.getElementById("copy-code").addEventListener("click", copyToClipboard);
+
+    ["indent", "ttags", "caption", "sizeH", "sizeW"].forEach(function (elem) {
+      document.getElementById(elem).addEventListener("change", generate);
+    });
+
+    function generate() {
+      const sizeW = Math.max(1, parseInt(document.getElementById("sizeW").value));
+      const sizeH = Math.max(1, parseInt(document.getElementById("sizeH").value));
+
+      const indent = document.getElementById("indent").checked;
+      const ttags = document.getElementById("ttags").checked;
+      const caption = document.getElementById("caption").checked;
+
+      let nl = "", nt = "", lvl = 0;
+      if (indent) {
+        nl = "\n";
+        nt = "   ";
+      }
+
+      let output = "<table>" + nl;
+
+      if (caption) {
+        output += nt.repeat(lvl + 1) + "<caption>&lt;caption&gt;</caption>" + nl;
+      }
+
+      if (ttags) {
+        output += nt.repeat(++lvl) + "<thead>" + nl;
+        output += nt.repeat(++lvl) + "<tr>" + nl;
+        for (let j = 0; j < sizeW; j++) {
+          output += nt.repeat(lvl + 1) + "<th></th>" + nl;
+        }
+        output += nt.repeat(lvl) + "</tr>" + nl;
+        output += nt.repeat(--lvl) + "</thead>" + nl;
+
+        output += nt.repeat(++lvl) + "<tbody>" + nl;
+      }
+
+      for (let i = 0; i < sizeH; i++) {
+        output += nt.repeat(++lvl) + "<tr>" + nl;
+        for (let j = 0; j < sizeW; j++) {
+          output += nt.repeat(lvl + 1) + "<td></td>" + nl;
+        }
+        output += nt.repeat(lvl) + "</tr>" + nl;
+        lvl--;
+      }
+
+      if (ttags) {
+        output += nt.repeat(lvl) + "</tbody>" + nl;
+        output += nt.repeat(++lvl) + "<tfoot>" + nl;
+        output += nt.repeat(++lvl) + "<tr>" + nl;
+        for (let j = 0; j < sizeW; j++) {
+          output += nt.repeat(lvl + 1) + "<td></td>" + nl;
+        }
+        output += nt.repeat(lvl) + "</tr>" + nl;
+        output += nt.repeat(--lvl) + "</tfoot>" + nl;
+      }
+
+      output += "</table>";
+
+      document.getElementById("output").value = output;
+      document.getElementById("output-live").innerHTML = output;
+    }
+
+    function copyToClipboard() {
+      const textarea = document.getElementById("output");
+      textarea.select();
+      document.execCommand("copy");
+    }
+
+    generate(); // init au chargement
+  </script>
+</body>
+
+</html>
