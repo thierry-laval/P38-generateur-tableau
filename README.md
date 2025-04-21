@@ -16,7 +16,7 @@ _`Début du projet le 21/04/2025`_
 
 ***
 
-![Générateur de tableau](img/generateur-prestashop-thierrylaval.dev.jpg)
+![Générateur de tableau](img/generateur-tableau-thierrylaval.dev.jpg)
 
 ## Générateur de tableau HTML
 
@@ -36,7 +36,7 @@ Un petit outil en ligne pour générer du code HTML de tableaux, avec prévisual
 Ouvre `index.html` dans ton navigateur.
 
 ## Démo
-(à compléter avec l’URL GitHub Pages si besoin)
+https://thierry-laval.github.io/P38-generateur-tableau/
 
 ### 📦 &nbsp; Utilisé dans ce projet
 
